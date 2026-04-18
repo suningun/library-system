@@ -79,9 +79,6 @@ public class MemberManagement {
     // 🔹 UPDATE
     private void updateMember() {
         try {
-            viewMembers();
-            if (memberList.isEmpty()) return;
-
             System.out.print("Select member number: ");
             int index = scanner.nextInt() - 1;
             scanner.nextLine();
