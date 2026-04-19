@@ -1,9 +1,9 @@
 public class Book {
     private String title;
-    private String author;
-    private int year;
-    private String genre;
-    private String isbn;
+    private final String author;
+    private final int year;
+    private final String genre;
+    private final String isbn;
 
     public Book(String title, String author, int year, String genre, String isbn) {
         this.title = title;
@@ -22,5 +22,21 @@ public class Book {
     public String toString() {
         return String.format("Title: %s | Author: %s | Year: %d | Genre: %s | ISBN: %s", 
                               title, author, year, genre, isbn);
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public String getIsbn() {
+        return isbn;
     }
 }

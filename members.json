@@ -1,1 +1,14 @@
-[{"name":"sreypich"},{"name":"Un Suning"}]
+[
+  {
+    "id": "001",
+    "name": "Alice"
+  },
+  {
+    "id": "002",
+    "name": "Bob"
+  },
+  {
+    "id": "003",
+    "name": "Charlie"
+  }
+]

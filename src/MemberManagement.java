@@ -1,19 +1,20 @@
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import java.io.*;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MemberManagement {
 
     private ArrayList<Member> memberList = new ArrayList<>();
-    private final Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner;
 
-    private final String FILE_NAME = "members.json";
-    private final Gson gson = new Gson();
+    private static final String FILE_NAME = "members.json";
+
+    public MemberManagement(Scanner scanner) {
+        this.scanner = scanner;
+    }
 
     // 🔹 MAIN RUN METHOD
     public void run() {
@@ -48,33 +49,34 @@ public class MemberManagement {
                 }
 
             } catch (InputMismatchException e) {
-                System.out.println("❌ Invalid input. Please enter a number.");
+                System.out.println("Invalid input. Please enter a number.");
                 scanner.nextLine(); // clear buffer
             } catch (Exception e) {
-                System.out.println("❌ Unexpected error: " + e.getMessage());
+                System.out.println("Unexpected error: " + e.getMessage());
             }
         }
     }
 
-    // 🔹 ADD
-    private void addMember() {
-        try {
-            System.out.print("Enter name: ");
-            String name = scanner.nextLine().trim();
+     // 🔹 ADD
+     private void addMember() {
+         try {
+             System.out.print("Enter name: ");
+             String name = scanner.nextLine().trim();
 
-            if (name.isEmpty()) {
-                System.out.println("❌ Name cannot be empty.");
-                return;
-            }
+             if (name.isEmpty()) {
+                 System.out.println("Name cannot be empty.");
+                 return;
+             }
 
-            memberList.add(new Member(name));
-            saveMembers();
-            System.out.println("Member added.");
+             String memberId = generateMemberId();
+             memberList.add(new Member(memberId, name));
+             saveMembers();
+             System.out.println("Member added with ID: " + memberId);
 
-        } catch (Exception e) {
-            System.out.println("Error adding member.");
-        }
-    }
+         } catch (Exception e) {
+             System.out.println("Error adding member.");
+         }
+     }
 
     // 🔹 UPDATE
     private void updateMember() {
@@ -84,7 +86,7 @@ public class MemberManagement {
             scanner.nextLine();
 
             if (index < 0 || index >= memberList.size()) {
-                System.out.println("❌ Invalid selection.");
+                System.out.println("Invalid selection.");
                 return;
             }
 
@@ -92,7 +94,7 @@ public class MemberManagement {
             String newName = scanner.nextLine().trim();
 
             if (newName.isEmpty()) {
-                System.out.println("❌ Name cannot be empty.");
+                System.out.println("Name cannot be empty.");
                 return;
             }
 
@@ -101,7 +103,7 @@ public class MemberManagement {
             System.out.println("Member updated.");
 
         } catch (InputMismatchException e) {
-            System.out.println("❌ Please enter a valid number.");
+            System.out.println("Please enter a valid number.");
             scanner.nextLine();
         } catch (Exception e) {
             System.out.println("Error updating member.");
@@ -119,7 +121,7 @@ public class MemberManagement {
             scanner.nextLine();
 
             if (index < 0 || index >= memberList.size()) {
-                System.out.println("❌ Invalid selection.");
+                System.out.println("Invalid selection.");
                 return;
             }
 
@@ -128,7 +130,7 @@ public class MemberManagement {
             System.out.println("Deleted: " + removed);
 
         } catch (InputMismatchException e) {
-            System.out.println("❌ Please enter a valid number.");
+            System.out.println("Please enter a valid number.");
             scanner.nextLine();
         } catch (Exception e) {
             System.out.println("Error deleting member.");
@@ -169,31 +171,95 @@ public class MemberManagement {
         }
     }
 
-    // 🔹 SAVE TO JSON
-    private void saveMembers() {
-        try (Writer writer = new FileWriter(FILE_NAME)) {
-            gson.toJson(memberList, writer);
-        } catch (IOException e) {
-            System.out.println("❌ Error saving file: " + e.getMessage());
+     // SAVE JSON
+     private void saveMembers() {
+         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
+             writer.write("[\n");
+             for (int i = 0; i < memberList.size(); i++) {
+                 Member member = memberList.get(i);
+                 writer.write("  {\n");
+                 writer.write("    \"id\": \"" + escapeJson(member.getId()) + "\",\n");
+                 writer.write("    \"name\": \"" + escapeJson(member.getName()) + "\"\n");
+                 writer.write("  }");
+                 if (i < memberList.size() - 1) {
+                     writer.write(",");
+                 }
+                 writer.newLine();
+             }
+             writer.write("]");
+         } catch (IOException e) {
+             System.out.println("Error saving file: " + e.getMessage());
+         }
+     }
+
+     // LOAD JSON
+     private void loadMembers() {
+         ensureJsonFileExists();
+         memberList = new ArrayList<>();
+         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
+             StringBuilder json = new StringBuilder();
+             String line;
+             while ((line = reader.readLine()) != null) {
+                 json.append(line).append('\n');
+             }
+
+             Pattern objectPattern = Pattern.compile("\\{[^{}]*}");
+             Matcher objectMatcher = objectPattern.matcher(json.toString());
+
+             while (objectMatcher.find()) {
+                 String obj = objectMatcher.group();
+                 String id = extractString(obj, "id");
+                 String name = extractString(obj, "name");
+                 if (name == null || name.trim().isEmpty()) {
+                     continue;
+                 }
+                 if (id == null) {
+                     id = generateMemberId();
+                 }
+                 memberList.add(new Member(id, name));
+             }
+         } catch (IOException e) {
+             System.out.println("Error loading file: " + e.getMessage());
+         }
+     }
+
+    private void ensureJsonFileExists() {
+        File jsonFile = new File(FILE_NAME);
+        if (jsonFile.exists()) {
+            return;
         }
+
+        memberList = new ArrayList<>();
+        saveMembers();
     }
 
-    // 🔹 LOAD FROM JSON
-    private void loadMembers() {
-        try (Reader reader = new FileReader(FILE_NAME)) {
+    private String escapeJson(String value) {
+        return value.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
+    }
 
-            Type type = new TypeToken<ArrayList<Member>>() {}.getType();
-            memberList = gson.fromJson(reader, type);
+    private String unescapeJson(String value) {
+        return value.replace("\\\"", "\"")
+                .replace("\\n", "\n")
+                .replace("\\r", "\r")
+                .replace("\\t", "\t")
+                .replace("\\\\", "\\");
+    }
 
-            if (memberList == null) {
-                memberList = new ArrayList<>();
-            }
-
-        } catch (FileNotFoundException e) {
-            memberList = new ArrayList<>();
-        } catch (Exception e) {
-            System.out.println("❌ Error loading file.");
-            memberList = new ArrayList<>();
+    private String extractString(String obj, String key) {
+        Pattern p = Pattern.compile("\"" + key + "\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"");
+        Matcher m = p.matcher(obj);
+        if (!m.find()) {
+            return null;
         }
+        return unescapeJson(m.group(1));
+    }
+
+    private String generateMemberId() {
+        int nextId = memberList.size() + 1;
+        return String.format("%03d", nextId);
     }
 }

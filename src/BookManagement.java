@@ -1,19 +1,20 @@
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import java.io.*;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BookManagement {
 
     private ArrayList<Book> bookList = new ArrayList<>();
-    private final Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner;
 
-    private final String FILE_NAME = "books.json";
-    private final Gson gson = new Gson();
+    private static final String FILE_NAME = "books.json";
+
+    public BookManagement(Scanner scanner) {
+        this.scanner = scanner;
+    }
 
     // 🔹 MAIN RUN METHOD
     public void run() {
@@ -48,10 +49,10 @@ public class BookManagement {
                 }
 
             } catch (InputMismatchException e) {
-                System.out.println("❌ Invalid input. Please enter a number.");
-                scanner.nextLine(); 
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.nextLine();
             } catch (Exception e) {
-                System.out.println("❌ Unexpected error: " + e.getMessage());
+                System.out.println("Unexpected error: " + e.getMessage());
             }
         }
     }
@@ -75,7 +76,7 @@ public class BookManagement {
         saveBooks();
         System.out.println("Book added successfully!");
     } catch (Exception e) {
-        System.out.println("❌ Error: Could not add book. Check your input.");
+        System.out.println("Error: Could not add book. Check your input.");
         scanner.nextLine(); // Clear buffer in case of error
     }
 }
@@ -88,7 +89,7 @@ public class BookManagement {
             scanner.nextLine();
 
             if (index < 0 || index >= bookList.size()) {
-                System.out.println("❌ Invalid selection.");
+                System.out.println("Invalid selection.");
                 return;
             }
 
@@ -96,7 +97,7 @@ public class BookManagement {
             String newTitle = scanner.nextLine().trim();
 
             if (newTitle.isEmpty()) {
-                System.out.println("❌ Title cannot be empty.");
+                System.out.println("Title cannot be empty.");
                 return;
             }
 
@@ -105,10 +106,10 @@ public class BookManagement {
             System.out.println("Book updated.");
 
         } catch (InputMismatchException e) {
-            System.out.println("❌ Please enter a valid number.");
+            System.out.println("Please enter a valid number.");
             scanner.nextLine();
         } catch (Exception e) {
-            System.out.println("Error updating member.");
+            System.out.println("Error updating book.");
         }
     }
 
@@ -123,7 +124,7 @@ public class BookManagement {
             scanner.nextLine();
 
             if (index < 0 || index >= bookList.size()) {
-                System.out.println("❌ Invalid selection.");
+                System.out.println("Invalid selection.");
                 return;
             }
 
@@ -132,32 +133,95 @@ public class BookManagement {
             System.out.println("Deleted: " + removed);
 
         } catch (InputMismatchException e) {
-            System.out.println("❌ Please enter a valid number.");
+            System.out.println("Please enter a valid number.");
             scanner.nextLine();
         } catch (Exception e) {
-            System.out.println("Error deleting member.");
+            System.out.println("Error deleting book.");
         }
     }
 
-    // 🔹 SEARCH
-    private void searchBooks() {
-        try {
-            System.out.print("Enter title to search: ");
-            String title = scanner.nextLine().trim();
+     // 🔹 SEARCH
+     private void searchBooks() {
+         try {
+             System.out.println("\n--- Search Book ---");
+             System.out.println("1. Search by Title");
+             System.out.println("2. Search by Author");
+             System.out.println("3. Search by Year");
+             System.out.println("4. Search by Genre");
+             System.out.println("5. Search by ISBN");
+             System.out.print("Enter choice: ");
 
-            for (Book b : bookList) {
-                if (b.getTitle().equalsIgnoreCase(title)) {
-                    System.out.println("Found: " + b);
-                    return;
-                }
-            }
+             int searchChoice = scanner.nextInt();
+             scanner.nextLine();
 
-            System.out.println("Book not found.");
+             ArrayList<Book> results = new ArrayList<>();
 
-        } catch (Exception e) {
-            System.out.println("Error searching books.");
-        }
-    }
+             switch (searchChoice) {
+                 case 1 -> {
+                     System.out.print("Enter title to search: ");
+                     String title = scanner.nextLine().trim();
+                     for (Book b : bookList) {
+                         if (b.getTitle().equalsIgnoreCase(title)) {
+                             results.add(b);
+                         }
+                     }
+                 }
+                 case 2 -> {
+                     System.out.print("Enter author to search: ");
+                     String author = scanner.nextLine().trim();
+                     for (Book b : bookList) {
+                         if (b.getAuthor().equalsIgnoreCase(author)) {
+                             results.add(b);
+                         }
+                     }
+                 }
+                 case 3 -> {
+                     System.out.print("Enter year to search: ");
+                     int year = scanner.nextInt();
+                     scanner.nextLine();
+                     for (Book b : bookList) {
+                         if (b.getYear() == year) {
+                             results.add(b);
+                         }
+                     }
+                 }
+                 case 4 -> {
+                     System.out.print("Enter genre to search: ");
+                     String genre = scanner.nextLine().trim();
+                     for (Book b : bookList) {
+                         if (b.getGenre().equalsIgnoreCase(genre)) {
+                             results.add(b);
+                         }
+                     }
+                 }
+                 case 5 -> {
+                     System.out.print("Enter ISBN to search: ");
+                     String isbn = scanner.nextLine().trim();
+                     for (Book b : bookList) {
+                         if (b.getIsbn().equalsIgnoreCase(isbn)) {
+                             results.add(b);
+                         }
+                     }
+                 }
+                 default -> System.out.println("Invalid choice.");
+             }
+
+             if (results.isEmpty()) {
+                 System.out.println("No books found.");
+             } else {
+                 System.out.println("\n===== Search Results =====");
+                 for (int i = 0; i < results.size(); i++) {
+                     System.out.println((i + 1) + ". " + results.get(i));
+                 }
+             }
+
+         } catch (InputMismatchException e) {
+             System.out.println("Invalid input. Please enter valid data.");
+             scanner.nextLine();
+         } catch (Exception e) {
+             System.out.println("Error searching books.");
+         }
+     }
 
     // 🔹 VIEW
     private void viewBooks() {
@@ -173,31 +237,108 @@ public class BookManagement {
         }
     }
 
-    // 🔹 SAVE TO JSON
+    // SAVE JSON
     private void saveBooks() {
-        try (Writer writer = new FileWriter(FILE_NAME)) {
-            gson.toJson(bookList, writer);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
+            writer.write("[\n");
+            for (int i = 0; i < bookList.size(); i++) {
+                Book book = bookList.get(i);
+                writer.write("  {\n");
+                writer.write("    \"title\": \"" + escapeJson(book.getTitle()) + "\",\n");
+                writer.write("    \"author\": \"" + escapeJson(book.getAuthor()) + "\",\n");
+                writer.write("    \"year\": " + book.getYear() + ",\n");
+                writer.write("    \"genre\": \"" + escapeJson(book.getGenre()) + "\",\n");
+                writer.write("    \"isbn\": \"" + escapeJson(book.getIsbn()) + "\"\n");
+                writer.write("  }");
+                if (i < bookList.size() - 1) {
+                    writer.write(",");
+                }
+                writer.newLine();
+            }
+            writer.write("]");
         } catch (IOException e) {
-            System.out.println("❌ Error saving file: " + e.getMessage());
+            System.out.println("Error saving file: " + e.getMessage());
         }
     }
 
-    // 🔹 LOAD FROM JSON
+    // LOAD JSON
     private void loadBooks() {
-        try (Reader reader = new FileReader(FILE_NAME)) {
-
-            Type type = new TypeToken<ArrayList<Book>>() {}.getType();
-            bookList = gson.fromJson(reader, type);
-
-            if (bookList == null) {
-                bookList = new ArrayList<>();
+        ensureJsonFileExists();
+        bookList = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
+            StringBuilder json = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                json.append(line).append('\n');
             }
 
-        } catch (FileNotFoundException e) {
-            bookList = new ArrayList<>();
-        } catch (Exception e) {
-            System.out.println("❌ Error loading file.");
-            bookList = new ArrayList<>();
+            Pattern objectPattern = Pattern.compile("\\{[^{}]*}");
+            Matcher objectMatcher = objectPattern.matcher(json.toString());
+
+            while (objectMatcher.find()) {
+                String obj = objectMatcher.group();
+                String title = extractString(obj, "title");
+                String author = extractString(obj, "author");
+                Integer year = extractInt(obj, "year");
+                String genre = extractString(obj, "genre");
+                String isbn = extractString(obj, "isbn");
+
+                if (title == null || author == null || year == null || genre == null || isbn == null) {
+                    continue;
+                }
+
+                bookList.add(new Book(title, author, year, genre, isbn));
+            }
+        } catch (IOException e) {
+            System.out.println("Error loading file: " + e.getMessage());
+        }
+    }
+
+    private void ensureJsonFileExists() {
+        File jsonFile = new File(FILE_NAME);
+        if (jsonFile.exists()) {
+            return;
+        }
+
+        bookList = new ArrayList<>();
+        saveBooks();
+    }
+
+    private String escapeJson(String value) {
+        return value.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
+    }
+
+    private String unescapeJson(String value) {
+        return value.replace("\\\"", "\"")
+                .replace("\\n", "\n")
+                .replace("\\r", "\r")
+                .replace("\\t", "\t")
+                .replace("\\\\", "\\");
+    }
+
+    private String extractString(String obj, String key) {
+        Pattern p = Pattern.compile("\"" + key + "\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"");
+        Matcher m = p.matcher(obj);
+        if (!m.find()) {
+            return null;
+        }
+        return unescapeJson(m.group(1));
+    }
+
+    private Integer extractInt(String obj, String key) {
+        Pattern p = Pattern.compile("\"" + key + "\"\\s*:\\s*(-?\\d+)");
+        Matcher m = p.matcher(obj);
+        if (!m.find()) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(m.group(1));
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 }
