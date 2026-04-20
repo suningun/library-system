@@ -137,25 +137,84 @@ public class MemberManagement {
         }
     }
 
-    // 🔹 SEARCH
-    private void searchMember() {
-        try {
-            System.out.print("Enter name to search: ");
-            String name = scanner.nextLine().trim();
+     // 🔹 SEARCH
+     private void searchMember() {
+         try {
+             System.out.println("\nSearch Member By:");
+             System.out.println("1. ID");
+             System.out.println("2. Name");
+             System.out.print("Select option: ");
+             
+             int option = scanner.nextInt();
+             scanner.nextLine();
+             
+             switch (option) {
+                 case 1 -> searchById();
+                 case 2 -> searchByName();
+                 default -> System.out.println("Invalid option.");
+             }
 
-            for (Member m : memberList) {
-                if (m.getName().equalsIgnoreCase(name)) {
-                    System.out.println("Found: " + m);
-                    return;
-                }
-            }
+         } catch (InputMismatchException e) {
+             System.out.println("Please enter a valid number.");
+             scanner.nextLine();
+         } catch (Exception e) {
+             System.out.println("Error searching member.");
+         }
+     }
 
-            System.out.println("Member not found.");
+     // 🔹 SEARCH BY ID
+     private void searchById() {
+         try {
+             System.out.print("Enter member ID to search: ");
+             String id = scanner.nextLine().trim();
 
-        } catch (Exception e) {
-            System.out.println("Error searching member.");
-        }
-    }
+             ArrayList<Member> results = new ArrayList<>();
+             for (Member m : memberList) {
+                 if (m.getId().equalsIgnoreCase(id)) {
+                     results.add(m);
+                 }
+             }
+
+             if (results.isEmpty()) {
+                 System.out.println("Member not found.");
+             } else {
+                 System.out.println("\nSearch Results:");
+                 for (Member m : results) {
+                     System.out.println(m);
+                 }
+             }
+
+         } catch (Exception e) {
+             System.out.println("Error searching member by ID.");
+         }
+     }
+
+     // 🔹 SEARCH BY NAME
+     private void searchByName() {
+         try {
+             System.out.print("Enter name to search: ");
+             String name = scanner.nextLine().trim();
+
+             ArrayList<Member> results = new ArrayList<>();
+             for (Member m : memberList) {
+                 if (m.getName().equalsIgnoreCase(name)) {
+                     results.add(m);
+                 }
+             }
+
+             if (results.isEmpty()) {
+                 System.out.println("Member not found.");
+             } else {
+                 System.out.println("\nSearch Results:");
+                 for (Member m : results) {
+                     System.out.println(m);
+                 }
+             }
+
+         } catch (Exception e) {
+             System.out.println("Error searching member by name.");
+         }
+     }
 
     // 🔹 VIEW
     private void viewMembers() {
