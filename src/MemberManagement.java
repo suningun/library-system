@@ -262,4 +262,9 @@ public class MemberManagement {
         int nextId = memberList.size() + 1;
         return String.format("%03d", nextId);
     }
+
+    // 🔹 PUBLIC METHOD TO LOAD MEMBERS (for external use)
+    public void loadMembersData() {
+        loadMembers();
+    }
 }

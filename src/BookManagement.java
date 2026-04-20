@@ -341,4 +341,9 @@ public class BookManagement {
             return null;
         }
     }
+
+    // 🔹 PUBLIC METHOD TO LOAD BOOKS (for external use)
+    public void loadBooksData() {
+        loadBooks();
+    }
 }

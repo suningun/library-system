@@ -12,5 +12,12 @@
     "year": 2006,
     "genre": "2200",
     "isbn": "100"
+  },
+  {
+    "title": "Harry Potter",
+    "author": "JK Rowling",
+    "year": 1995,
+    "genre": "Fantasy",
+    "isbn": "12345"
   }
 ]
