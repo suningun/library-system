@@ -1,0 +1,10 @@
+[
+  {
+    "memberId": "001",
+    "memberName": "Alice",
+    "bookTitle": "Hello",
+    "borrowDate": "2026-04-20",
+    "dueDate": "2026-05-04",
+    "returnDate": "null"
+  }
+]
