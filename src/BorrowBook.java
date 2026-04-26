@@ -50,6 +50,12 @@ public class BorrowBook {
                 return;
             }
 
+            // Check if book has available copies
+            if (!hasAvailableCopies(bookTitle)) {
+                System.out.println("No copies of this book are currently available.");
+                return;
+            }
+
             // Check if book is already borrowed by this member
             if (isBookAlreadyBorrowed(memberId, bookTitle)) {
                 System.out.println("This member has already borrowed this book.");
@@ -62,6 +68,10 @@ public class BorrowBook {
             
             BorrowRecord record = new BorrowRecord(memberId, memberName, bookTitle, borrowDate, dueDate);
             borrowRecords.add(record);
+            
+            // Decrease available copies
+            borrowBookCopy(bookTitle);
+            
             saveBorrowRecords();
 
             System.out.println("\n✓ Book borrowed successfully!");
@@ -130,6 +140,44 @@ public class BorrowBook {
             System.out.println("Error checking book: " + e.getMessage());
         }
         return false;
+    }
+
+    // 🔹 CHECK IF BOOK HAS AVAILABLE COPIES
+    private boolean hasAvailableCopies(String bookTitle) {
+        try {
+            java.lang.reflect.Field field = BookManagement.class.getDeclaredField("bookList");
+            field.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            ArrayList<Book> bookList = (ArrayList<Book>) field.get(bookManagement);
+            
+            for (Book b : bookList) {
+                if (b.getTitle().equalsIgnoreCase(bookTitle)) {
+                    return b.getAvailableCopies() > 0;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error checking book copies: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // 🔹 DECREASE AVAILABLE COPIES OF A BOOK
+    private void borrowBookCopy(String bookTitle) {
+        try {
+            java.lang.reflect.Field field = BookManagement.class.getDeclaredField("bookList");
+            field.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            ArrayList<Book> bookList = (ArrayList<Book>) field.get(bookManagement);
+            
+            for (Book b : bookList) {
+                if (b.getTitle().equalsIgnoreCase(bookTitle)) {
+                    b.setAvailableCopies(b.getAvailableCopies() - 1);
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error updating book copies: " + e.getMessage());
+        }
     }
 
     // 🔹 CHECK IF BOOK IS ALREADY BORROWED BY THIS MEMBER

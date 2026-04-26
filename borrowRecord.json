@@ -30,5 +30,13 @@
     "borrowDate": "2026-04-26",
     "dueDate": "2026-04-29",
     "returnDate": "null"
+  },
+  {
+    "memberId": "004",
+    "memberName": "Chhorn Sovanda",
+    "bookTitle": "Harry Potter",
+    "borrowDate": "2026-04-26",
+    "dueDate": "2026-04-29",
+    "returnDate": "null"
   }
 ]

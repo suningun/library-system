@@ -71,6 +71,10 @@ public class ReturnBook {
 
             // Update return date
             record.setReturnDate(today);
+            
+            // Increase available copies
+            returnBookCopy(bookTitle);
+            
             saveBorrowRecords();
 
             System.out.println("\n✓ Book returned successfully!");
@@ -272,5 +276,16 @@ public class ReturnBook {
                 .replace("\n", "\\n")
                 .replace("\r", "\\r")
                 .replace("\t", "\\t");
+    }
+
+    // 🔹 INCREASE AVAILABLE COPIES OF A BOOK
+    private void returnBookCopy(String bookTitle) {
+        ArrayList<Book> bookList = bookManagement.getBookList();
+        for (Book b : bookList) {
+            if (b.getTitle().equalsIgnoreCase(bookTitle)) {
+                b.returnBook(); // Use the Book class method
+                return;
+            }
+        }
     }
 }

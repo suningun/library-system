@@ -71,10 +71,21 @@ public class BookManagement {
         String genre = scanner.nextLine();
         System.out.print("Enter ISBN: ");
         String isbn = scanner.nextLine();
+        System.out.print("Enter Total Copies: ");
+        int totalCopies = scanner.nextInt();
+        scanner.nextLine(); // Clear buffer
 
-        bookList.add(new Book(title, author, year, genre, isbn));
+        if (totalCopies <= 0) {
+            System.out.println("Total copies must be greater than 0.");
+            return;
+        }
+
+        bookList.add(new Book(title, author, year, genre, isbn, totalCopies));
         saveBooks();
         System.out.println("Book added successfully!");
+    } catch (InputMismatchException e) {
+        System.out.println("Invalid input. Please enter valid numbers for year and total copies.");
+        scanner.nextLine(); // Clear buffer in case of error
     } catch (Exception e) {
         System.out.println("Error: Could not add book. Check your input.");
         scanner.nextLine(); // Clear buffer in case of error
@@ -248,7 +259,9 @@ public class BookManagement {
                 writer.write("    \"author\": \"" + escapeJson(book.getAuthor()) + "\",\n");
                 writer.write("    \"year\": " + book.getYear() + ",\n");
                 writer.write("    \"genre\": \"" + escapeJson(book.getGenre()) + "\",\n");
-                writer.write("    \"isbn\": \"" + escapeJson(book.getIsbn()) + "\"\n");
+                writer.write("    \"isbn\": \"" + escapeJson(book.getIsbn()) + "\",\n");
+                writer.write("    \"totalCopies\": " + book.getTotalCopies() + ",\n");
+                writer.write("    \"availableCopies\": " + book.getAvailableCopies() + "\n");
                 writer.write("  }");
                 if (i < bookList.size() - 1) {
                     writer.write(",");
@@ -282,12 +295,29 @@ public class BookManagement {
                 Integer year = extractInt(obj, "year");
                 String genre = extractString(obj, "genre");
                 String isbn = extractString(obj, "isbn");
+                Integer totalCopies = extractInt(obj, "totalCopies");
+                Integer availableCopies = extractInt(obj, "availableCopies");
 
                 if (title == null || author == null || year == null || genre == null || isbn == null) {
                     continue;
                 }
 
-                bookList.add(new Book(title, author, year, genre, isbn));
+                // Backward compatibility: if totalCopies is not in JSON, default to 1
+                if (totalCopies == null) {
+                    totalCopies = 1;
+                }
+
+                Book book;
+                if (totalCopies != null && availableCopies != null) {
+                    // New format with stock tracking
+                    book = new Book(title, author, year, genre, isbn, totalCopies);
+                    book.setAvailableCopies(availableCopies);
+                } else {
+                    // Legacy format without stock tracking
+                    book = new Book(title, author, year, genre, isbn, totalCopies);
+                }
+
+                bookList.add(book);
             }
         } catch (IOException e) {
             System.out.println("Error loading file: " + e.getMessage());
