@@ -6,6 +6,7 @@ public class LibrarySystem {
     private final BookManagement bookManagement;
     private final MemberManagement memberManagement;
     private final BorrowBook borrowBook;
+    private final ReturnBook returnBook;
 
     public LibrarySystem() {
         scanner = new Scanner(System.in);
@@ -13,6 +14,7 @@ public class LibrarySystem {
         bookManagement = new BookManagement(scanner);
         memberManagement = new MemberManagement(scanner);
         borrowBook = new BorrowBook(scanner, bookManagement, memberManagement);
+        returnBook = new ReturnBook(scanner, bookManagement, memberManagement);
     }
 
     public void start() {
@@ -35,10 +37,10 @@ public class LibrarySystem {
                     borrowBook.run();
                     break;
                 case 4:
-                    System.out.println("Return Book (Coming soon)");
+                    returnBook.run();
                     break;
                 case 5:
-                    System.out.println("Overdue List (Coming soon)");
+                    returnBook.viewOverdueRecords();
                     break;
                 case 6:
                     borrowBook.viewBorrowRecords();

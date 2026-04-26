@@ -19,5 +19,12 @@
     "year": 1995,
     "genre": "Fantasy",
     "isbn": "12345"
+  },
+  {
+    "title": "Murder mystery ",
+    "author": "James Cameron",
+    "year": 2022,
+    "genre": "Thriller",
+    "isbn": "20252026"
   }
 ]
