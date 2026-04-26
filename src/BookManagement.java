@@ -95,6 +95,9 @@ public class BookManagement {
     // 🔹 UPDATE
     private void updateBook() {
         try {
+            viewBooks();
+            if (bookList.isEmpty()) return;
+
             System.out.print("Select book number: ");
             int index = scanner.nextInt() - 1;
             scanner.nextLine();
@@ -104,17 +107,92 @@ public class BookManagement {
                 return;
             }
 
-            System.out.print("Enter new title: ");
-            String newTitle = scanner.nextLine().trim();
+            Book book = bookList.get(index);
+            boolean updated = false;
 
-            if (newTitle.isEmpty()) {
-                System.out.println("Title cannot be empty.");
-                return;
+            while (true) {
+                System.out.println("\n--- Update Book ---");
+                System.out.println("1. Update Title (Current: " + book.getTitle() + ")");
+                System.out.println("2. Update Author (Current: " + book.getAuthor() + ")");
+                System.out.println("3. Update Year (Current: " + book.getYear() + ")");
+                System.out.println("4. Update Genre (Current: " + book.getGenre() + ")");
+                System.out.println("5. Update ISBN (Current: " + book.getIsbn() + ")");
+                System.out.println("6. Done");
+                System.out.print("Select field to update: ");
+
+                int choice = scanner.nextInt();
+                scanner.nextLine();
+
+                switch (choice) {
+                    case 1 -> {
+                        System.out.print("Enter new title: ");
+                        String newTitle = scanner.nextLine().trim();
+                        if (newTitle.isEmpty()) {
+                            System.out.println("Title cannot be empty.");
+                        } else {
+                            book.setTitle(newTitle);
+                            System.out.println("Title updated.");
+                            updated = true;
+                        }
+                    }
+                    case 2 -> {
+                        System.out.print("Enter new author: ");
+                        String newAuthor = scanner.nextLine().trim();
+                        if (newAuthor.isEmpty()) {
+                            System.out.println("Author cannot be empty.");
+                        } else {
+                            book.setAuthor(newAuthor);
+                            System.out.println("Author updated.");
+                            updated = true;
+                        }
+                    }
+                    case 3 -> {
+                        System.out.print("Enter new year: ");
+                        try {
+                            int newYear = scanner.nextInt();
+                            scanner.nextLine();
+                            book.setYear(newYear);
+                            System.out.println("Year updated.");
+                            updated = true;
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid year. Please enter a valid number.");
+                            scanner.nextLine();
+                        }
+                    }
+                    case 4 -> {
+                        System.out.print("Enter new genre: ");
+                        String newGenre = scanner.nextLine().trim();
+                        if (newGenre.isEmpty()) {
+                            System.out.println("Genre cannot be empty.");
+                        } else {
+                            book.setGenre(newGenre);
+                            System.out.println("Genre updated.");
+                            updated = true;
+                        }
+                    }
+                    case 5 -> {
+                        System.out.print("Enter new ISBN: ");
+                        String newIsbn = scanner.nextLine().trim();
+                        if (newIsbn.isEmpty()) {
+                            System.out.println("ISBN cannot be empty.");
+                        } else {
+                            book.setIsbn(newIsbn);
+                            System.out.println("ISBN updated.");
+                            updated = true;
+                        }
+                    }
+                    case 6 -> {
+                        if (updated) {
+                            saveBooks();
+                            System.out.println("Book updated successfully.");
+                        } else {
+                            System.out.println("No changes were made.");
+                        }
+                        return;
+                    }
+                    default -> System.out.println("Invalid choice. Please try again.");
+                }
             }
-
-            bookList.get(index).setTitle(newTitle);
-            saveBooks();
-            System.out.println("Book updated.");
 
         } catch (InputMismatchException e) {
             System.out.println("Please enter a valid number.");
