@@ -2,8 +2,6 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ReturnBook {
 
@@ -118,21 +116,13 @@ public class ReturnBook {
         return null;
     }
 
-    // 🔹 GET MEMBER NAME BY ID
+    // 🔹 GET MEMBER NAME BY ID (SIMPLIFIED)
     private String getMemberName(String memberId) {
-        try {
-            java.lang.reflect.Field field = MemberManagement.class.getDeclaredField("memberList");
-            field.setAccessible(true);
-            @SuppressWarnings("unchecked")
-            ArrayList<Member> memberList = (ArrayList<Member>) field.get(memberManagement);
-
-            for (Member m : memberList) {
-                if (m.getId().equalsIgnoreCase(memberId)) {
-                    return m.getName();
-                }
+        ArrayList<Member> memberList = memberManagement.getMemberList();
+        for (Member m : memberList) {
+            if (m.getId().equalsIgnoreCase(memberId)) {
+                return m.getName();
             }
-        } catch (Exception e) {
-            System.out.println("Error getting member name: " + e.getMessage());
         }
         return null;
     }
@@ -192,36 +182,56 @@ public class ReturnBook {
         }
     }
 
-    // LOAD JSON
+    // LOAD JSON (SIMPLIFIED)
     private void loadBorrowRecords() {
         ensureJsonFileExists();
         borrowRecords = new ArrayList<>();
+
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
-            StringBuilder json = new StringBuilder();
+            StringBuilder content = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
-                json.append(line).append('\n');
+                content.append(line.trim());
             }
 
-            Pattern objectPattern = Pattern.compile("\\{[^{}]*}");
-            Matcher objectMatcher = objectPattern.matcher(json.toString());
+            String json = content.toString();
+            if (json.length() <= 2) return; // Empty array []
 
-            while (objectMatcher.find()) {
-                String obj = objectMatcher.group();
-                String memberId = extractString(obj, "memberId");
-                String memberName = extractString(obj, "memberName");
-                String bookTitle = extractString(obj, "bookTitle");
-                String borrowDateStr = extractString(obj, "borrowDate");
-                String dueDateStr = extractString(obj, "dueDate");
-                String returnDateStr = extractString(obj, "returnDate");
+            // Remove outer brackets and split by objects
+            String[] objects = json.substring(1, json.length() - 1).split("\\},\\s*\\{");
 
+            for (String obj : objects) {
+                obj = obj.replace("{", "").replace("}", "").trim();
+                if (obj.isEmpty()) continue;
+
+                // Parse key-value pairs
+                String[] pairs = obj.split(",\\s*");
+                String memberId = null, memberName = null, bookTitle = null;
+                String borrowDateStr = null, dueDateStr = null, returnDateStr = null;
+
+                for (String pair : pairs) {
+                    String[] keyValue = pair.split(":\\s*", 2);
+                    if (keyValue.length != 2) continue;
+
+                    String key = keyValue[0].replace("\"", "");
+                    String value = keyValue[1].replace("\"", "");
+
+                    switch (key) {
+                        case "memberId" -> memberId = value;
+                        case "memberName" -> memberName = value;
+                        case "bookTitle" -> bookTitle = value;
+                        case "borrowDate" -> borrowDateStr = value;
+                        case "dueDate" -> dueDateStr = value;
+                        case "returnDate" -> returnDateStr = value;
+                    }
+                }
+
+                // Validate required fields
                 if (memberId == null || bookTitle == null || borrowDateStr == null || dueDateStr == null) {
                     continue;
                 }
 
-                if (memberName == null) {
-                    memberName = "";
-                }
+                if (memberName == null) memberName = "";
 
                 try {
                     LocalDate borrowDate = LocalDate.parse(borrowDateStr);
@@ -263,22 +273,4 @@ public class ReturnBook {
                 .replace("\r", "\\r")
                 .replace("\t", "\\t");
     }
-
-    private String unescapeJson(String value) {
-        return value.replace("\\\"", "\"")
-                .replace("\\n", "\n")
-                .replace("\\r", "\r")
-                .replace("\\t", "\t")
-                .replace("\\\\", "\\");
-    }
-
-    private String extractString(String obj, String key) {
-        Pattern p = Pattern.compile("\"" + key + "\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"");
-        Matcher m = p.matcher(obj);
-        if (!m.find()) {
-            return null;
-        }
-        return unescapeJson(m.group(1));
-    }
 }
-

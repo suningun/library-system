@@ -346,4 +346,9 @@ public class BookManagement {
     public void loadBooksData() {
         loadBooks();
     }
+
+    // 🔹 PUBLIC GETTER FOR BOOK LIST
+    public ArrayList<Book> getBookList() {
+        return bookList;
+    }
 }

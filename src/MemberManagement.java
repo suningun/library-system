@@ -326,4 +326,9 @@ public class MemberManagement {
     public void loadMembersData() {
         loadMembers();
     }
+
+    // 🔹 PUBLIC GETTER FOR MEMBER LIST
+    public ArrayList<Member> getMemberList() {
+        return memberList;
+    }
 }
