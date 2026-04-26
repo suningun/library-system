@@ -66,6 +66,24 @@ public class BorrowRecord {
         this.returnDate = returnDate;
     }
 
+    // ===== CHECK OVERDUE =====
+    public boolean isOverdue() {
+        if (returnDate == null) {
+            return LocalDate.now().isAfter(dueDate);
+        }
+        return returnDate.isAfter(dueDate);
+    }
+
+    // ===== GET OVERDUE DAYS =====
+    public long getOverdueDays() {
+        LocalDate endDate = (returnDate != null) ? returnDate : LocalDate.now();
+
+        if (endDate.isAfter(dueDate)) {
+            return java.time.temporal.ChronoUnit.DAYS.between(dueDate, endDate);
+        }
+        return 0;
+    }
+
     @Override
     public String toString() {
         return String.format("Member: [%s] %s | Book: %s | Borrowed: %s | Due: %s | Returned: %s",
