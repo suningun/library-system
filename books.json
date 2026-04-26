@@ -4,27 +4,53 @@
     "author": "Hell",
     "year": 2006,
     "genre": "1244",
-    "isbn": "1222"
+    "isbn": "1222",
+    "totalCopies": 4,
+    "availableCopies": 4
   },
   {
     "title": "Tah",
     "author": "Hell",
     "year": 2006,
     "genre": "2200",
-    "isbn": "100"
+    "isbn": "100",
+    "totalCopies": 4,
+    "availableCopies": 3
   },
   {
     "title": "Harry Potter",
     "author": "JK Rowling",
     "year": 1995,
     "genre": "Fantasy",
-    "isbn": "12345"
+    "isbn": "12345",
+    "totalCopies": 4,
+    "availableCopies": 4
   },
   {
-    "title": "Murder mystery ",
+    "title": "Love",
     "author": "James Cameron",
     "year": 2022,
     "genre": "Thriller",
-    "isbn": "20252026"
+    "isbn": "20252026",
+    "totalCopies": 1,
+    "availableCopies": 1
+  },
+  {
+    "title": "Love",
+    "author": "lover",
+    "year": 2025,
+    "genre": "Romance ",
+    "isbn": "54321",
+    "totalCopies": 4,
+    "availableCopies": 4
+  },
+  {
+    "title": "Musica",
+    "author": "Justin",
+    "year": 2010,
+    "genre": "Musical ",
+    "isbn": "24680",
+    "totalCopies": 5,
+    "availableCopies": 3
   }
 ]

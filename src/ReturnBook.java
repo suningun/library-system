@@ -76,6 +76,8 @@ public class ReturnBook {
             returnBookCopy(bookTitle);
             
             saveBorrowRecords();
+            // Save updated book stock to JSON
+            bookManagement.saveBooksData();
 
             System.out.println("\n✓ Book returned successfully!");
             System.out.println("Member: [" + memberId + "] " + memberName);

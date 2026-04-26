@@ -377,6 +377,11 @@ public class BookManagement {
         loadBooks();
     }
 
+    // 🔹 PUBLIC METHOD TO SAVE BOOKS (for external use)
+    public void saveBooksData() {
+        saveBooks();
+    }
+
     // 🔹 PUBLIC GETTER FOR BOOK LIST
     public ArrayList<Book> getBookList() {
         return bookList;
