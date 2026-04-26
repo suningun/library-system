@@ -50,6 +50,12 @@ public class BorrowBook {
                 return;
             }
 
+            // Check if book has available copies
+            if (!hasAvailableCopies(bookTitle)) {
+                System.out.println("No copies of this book are currently available.");
+                return;
+            }
+
             // Check if book is already borrowed by this member
             if (isBookAlreadyBorrowed(memberId, bookTitle)) {
                 System.out.println("This member has already borrowed this book.");
@@ -62,7 +68,14 @@ public class BorrowBook {
             
             BorrowRecord record = new BorrowRecord(memberId, memberName, bookTitle, borrowDate, dueDate);
             borrowRecords.add(record);
+            
+            // Decrease available copies
+            borrowBookCopy(bookTitle);
+            
             saveBorrowRecords();
+
+            // Save updated book stock to JSON
+            bookManagement.saveBooksData();
 
             System.out.println("\n✓ Book borrowed successfully!");
             System.out.println("Member: [" + memberId + "] " + memberName);
@@ -75,61 +88,59 @@ public class BorrowBook {
         }
     }
 
-    // 🔹 CHECK IF MEMBER EXISTS (using reflection to access memberList)
+    // 🔹 CHECK IF MEMBER EXISTS (SIMPLIFIED)
     private boolean memberExists(String memberId) {
-        try {
-            java.lang.reflect.Field field = MemberManagement.class.getDeclaredField("memberList");
-            field.setAccessible(true);
-            @SuppressWarnings("unchecked")
-            ArrayList<Member> memberList = (ArrayList<Member>) field.get(memberManagement);
-            
-            for (Member m : memberList) {
-                if (m.getId().equalsIgnoreCase(memberId)) {
-                    return true;
-                }
+        ArrayList<Member> memberList = memberManagement.getMemberList();
+        for (Member m : memberList) {
+            if (m.getId().equalsIgnoreCase(memberId)) {
+                return true;
             }
-        } catch (Exception e) {
-            System.out.println("Error checking member: " + e.getMessage());
         }
         return false;
     }
 
-    // 🔹 GET MEMBER NAME BY ID
+    // 🔹 GET MEMBER NAME BY ID (SIMPLIFIED)
     private String getMemberName(String memberId) {
-        try {
-            java.lang.reflect.Field field = MemberManagement.class.getDeclaredField("memberList");
-            field.setAccessible(true);
-            @SuppressWarnings("unchecked")
-            ArrayList<Member> memberList = (ArrayList<Member>) field.get(memberManagement);
-            
-            for (Member m : memberList) {
-                if (m.getId().equalsIgnoreCase(memberId)) {
-                    return m.getName();
-                }
+        ArrayList<Member> memberList = memberManagement.getMemberList();
+        for (Member m : memberList) {
+            if (m.getId().equalsIgnoreCase(memberId)) {
+                return m.getName();
             }
-        } catch (Exception e) {
-            System.out.println("Error getting member name: " + e.getMessage());
         }
         return null;
     }
 
-    // 🔹 CHECK IF BOOK EXISTS (using reflection to access bookList)
+    // 🔹 CHECK IF BOOK EXISTS (SIMPLIFIED)
     private boolean bookExists(String bookTitle) {
-        try {
-            java.lang.reflect.Field field = BookManagement.class.getDeclaredField("bookList");
-            field.setAccessible(true);
-            @SuppressWarnings("unchecked")
-            ArrayList<Book> bookList = (ArrayList<Book>) field.get(bookManagement);
-            
-            for (Book b : bookList) {
-                if (b.getTitle().equalsIgnoreCase(bookTitle)) {
-                    return true;
-                }
+        ArrayList<Book> bookList = bookManagement.getBookList();
+        for (Book b : bookList) {
+            if (b.getTitle().equalsIgnoreCase(bookTitle)) {
+                return true;
             }
-        } catch (Exception e) {
-            System.out.println("Error checking book: " + e.getMessage());
         }
         return false;
+    }
+
+    // 🔹 CHECK IF BOOK HAS AVAILABLE COPIES (SIMPLIFIED)
+    private boolean hasAvailableCopies(String bookTitle) {
+        ArrayList<Book> bookList = bookManagement.getBookList();
+        for (Book b : bookList) {
+            if (b.getTitle().equalsIgnoreCase(bookTitle)) {
+                return b.getAvailableCopies() > 0;
+            }
+        }
+        return false;
+    }
+
+    // 🔹 DECREASE AVAILABLE COPIES OF A BOOK (SIMPLIFIED)
+    private void borrowBookCopy(String bookTitle) {
+        ArrayList<Book> bookList = bookManagement.getBookList();
+        for (Book b : bookList) {
+            if (b.getTitle().equalsIgnoreCase(bookTitle)) {
+                b.setAvailableCopies(b.getAvailableCopies() - 1);
+                return;
+            }
+        }
     }
 
     // 🔹 CHECK IF BOOK IS ALREADY BORROWED BY THIS MEMBER

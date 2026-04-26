@@ -1,13 +1,5 @@
 [
   {
-    "memberId": "001",
-    "memberName": "Alice",
-    "bookTitle": "Hello",
-    "borrowDate": "2026-04-20",
-    "dueDate": "2026-05-04",
-    "returnDate": "2026-04-23"
-  },
-  {
     "memberId": "005",
     "memberName": "John",
     "bookTitle": "Tah",
@@ -16,17 +8,9 @@
     "returnDate": "null"
   },
   {
-    "memberId": "005",
-    "memberName": "John",
-    "bookTitle": "Hello",
-    "borrowDate": "2026-04-26",
-    "dueDate": "2026-04-29",
-    "returnDate": "2026-04-26"
-  },
-  {
     "memberId": "002",
     "memberName": "Bob",
-    "bookTitle": "Harry Potter",
+    "bookTitle": "Musica",
     "borrowDate": "2026-04-26",
     "dueDate": "2026-04-29",
     "returnDate": "null"
