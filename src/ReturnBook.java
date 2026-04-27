@@ -204,7 +204,7 @@ public class ReturnBook {
             if (json.length() <= 2) return; // Empty array []
 
             // Remove outer brackets and split by objects
-            String[] objects = json.substring(1, json.length() - 1).split("\\},\\s*\\{");
+            String[] objects = json.substring(1, json.length() - 1).split("},\\s*\\{");
 
             for (String obj : objects) {
                 obj = obj.replace("{", "").replace("}", "").trim();

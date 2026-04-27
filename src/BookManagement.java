@@ -386,7 +386,7 @@ public class BookManagement {
                 }
 
                 Book book;
-                if (totalCopies != null && availableCopies != null) {
+                if (availableCopies != null) {
                     // New format with stock tracking
                     book = new Book(title, author, year, genre, isbn, totalCopies);
                     book.setAvailableCopies(availableCopies);

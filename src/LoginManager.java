@@ -1,9 +1,7 @@
 import java.util.Scanner;
 
 public class LoginManager {
-    private String correctUsername = "admin";
-    private String correctPassword = "admin@168";
-    private Scanner scanner;
+    private final Scanner scanner;
 
     public LoginManager(Scanner scanner) {
         this.scanner = scanner;
@@ -23,6 +21,8 @@ public class LoginManager {
             System.out.print("Enter Password: ");
             String password = scanner.nextLine();
 
+            String correctUsername = "admin";
+            String correctPassword = "admin@168";
             if (username.equals(correctUsername) && password.equals(correctPassword)) {
                 System.out.println("Login Successful!");
                 return;

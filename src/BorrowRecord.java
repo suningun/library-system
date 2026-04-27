@@ -1,11 +1,11 @@
 import java.time.LocalDate;
 
 public class BorrowRecord {
-    private String memberId;
-    private String memberName;
-    private String bookTitle;
-    private LocalDate borrowDate;
-    private LocalDate dueDate;
+    private final String memberId;
+    private final String memberName;
+    private final String bookTitle;
+    private final LocalDate borrowDate;
+    private final LocalDate dueDate;
     private LocalDate returnDate;
 
     public BorrowRecord(String memberId, String memberName, String bookTitle, LocalDate borrowDate, LocalDate dueDate) {
@@ -22,40 +22,20 @@ public class BorrowRecord {
         return memberId;
     }
 
-    public void setMemberId(String memberId) {
-        this.memberId = memberId;
-    }
-
     public String getMemberName() {
         return memberName;
-    }
-
-    public void setMemberName(String memberName) {
-        this.memberName = memberName;
     }
 
     public String getBookTitle() {
         return bookTitle;
     }
 
-    public void setBookTitle(String bookTitle) {
-        this.bookTitle = bookTitle;
-    }
-
     public LocalDate getBorrowDate() {
         return borrowDate;
     }
 
-    public void setBorrowDate(LocalDate borrowDate) {
-        this.borrowDate = borrowDate;
-    }
-
     public LocalDate getDueDate() {
         return dueDate;
-    }
-
-    public void setDueDate(LocalDate dueDate) {
-        this.dueDate = dueDate;
     }
 
     public LocalDate getReturnDate() {
@@ -68,10 +48,8 @@ public class BorrowRecord {
 
     // ===== CHECK OVERDUE =====
     public boolean isOverdue() {
-        if (returnDate == null) {
-            return LocalDate.now().isAfter(dueDate);
-        }
-        return returnDate.isAfter(dueDate);
+        LocalDate endDate = (returnDate != null) ? returnDate : LocalDate.now();
+        return endDate.isAfter(dueDate);
     }
 
     // ===== GET OVERDUE DAYS =====

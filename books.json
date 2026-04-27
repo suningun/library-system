@@ -1,56 +1,92 @@
 [
   {
-    "title": "Hello",
-    "author": "Hell",
-    "year": 2006,
-    "genre": "1244",
-    "isbn": "1222",
-    "totalCopies": 4,
+    "title": "To Kill a Mockingbird",
+    "author": "Harper Lee",
+    "year": 1960,
+    "genre": "Fiction",
+    "isbn": "9780061120084",
+    "totalCopies": 6,
     "availableCopies": 4
   },
   {
-    "title": "Tah",
-    "author": "Hell",
-    "year": 2006,
-    "genre": "2200",
-    "isbn": "100",
-    "totalCopies": 4,
+    "title": "1984",
+    "author": "George Orwell",
+    "year": 1949,
+    "genre": "Dystopian",
+    "isbn": "9780451524935",
+    "totalCopies": 5,
     "availableCopies": 3
   },
   {
-    "title": "Harry Potter",
-    "author": "JK Rowling",
-    "year": 1995,
-    "genre": "Fantasy",
-    "isbn": "12345",
+    "title": "Pride and Prejudice",
+    "author": "Jane Austen",
+    "year": 1813,
+    "genre": "Classic",
+    "isbn": "9780141439518",
     "totalCopies": 4,
     "availableCopies": 4
   },
   {
-    "title": "Love",
-    "author": "James Cameron",
-    "year": 2022,
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "year": 1925,
+    "genre": "Classic",
+    "isbn": "9780743273565",
+    "totalCopies": 4,
+    "availableCopies": 2
+  },
+  {
+    "title": "The Hobbit",
+    "author": "J.R.R. Tolkien",
+    "year": 1937,
+    "genre": "Fantasy",
+    "isbn": "9780547928227",
+    "totalCopies": 5,
+    "availableCopies": 3
+  },
+  {
+    "title": "The Catcher in the Rye",
+    "author": "J.D. Salinger",
+    "year": 1951,
+    "genre": "Fiction",
+    "isbn": "9780316769488",
+    "totalCopies": 3,
+    "availableCopies": 2
+  },
+  {
+    "title": "The Alchemist",
+    "author": "Paulo Coelho",
+    "year": 1988,
+    "genre": "Adventure",
+    "isbn": "9780061122415",
+    "totalCopies": 4,
+    "availableCopies": 4
+  },
+  {
+    "title": "The Da Vinci Code",
+    "author": "Dan Brown",
+    "year": 2003,
     "genre": "Thriller",
-    "isbn": "20252026",
-    "totalCopies": 1,
+    "isbn": "9780307474278",
+    "totalCopies": 5,
     "availableCopies": 1
   },
   {
-    "title": "Love",
-    "author": "lover",
-    "year": 2025,
-    "genre": "Romance ",
-    "isbn": "54321",
-    "totalCopies": 4,
-    "availableCopies": 4
+    "title": "Harry Potter and the Sorcerer's Stone",
+    "author": "J.K. Rowling",
+    "year": 1997,
+    "genre": "Fantasy",
+    "isbn": "9780590353427",
+    "totalCopies": 7,
+    "availableCopies": 5
   },
   {
-    "title": "Musica",
-    "author": "Justin",
-    "year": 2010,
-    "genre": "Musical ",
-    "isbn": "24680",
+    "title": "The Hunger Games",
+    "author": "Suzanne Collins",
+    "year": 2008,
+    "genre": "Dystopian",
+    "isbn": "9780439023528",
     "totalCopies": 5,
-    "availableCopies": 3
+    "availableCopies": 2
   }
 ]

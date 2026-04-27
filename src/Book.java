@@ -4,7 +4,7 @@ public class Book {
     private int year;
     private String genre;
     private String isbn;
-    private int totalCopies;
+    private final int totalCopies;
     private int availableCopies;
 
     public Book(String title, String author, int year, String genre, String isbn, int totalCopies) {
@@ -15,11 +15,6 @@ public class Book {
         this.isbn = isbn;
         this.totalCopies = totalCopies;
         this.availableCopies = totalCopies; // Initially all copies are available
-    }
-
-    // Legacy constructor for backward compatibility
-    public Book(String title, String author, int year, String genre, String isbn) {
-        this(title, author, year, genre, isbn, 1); // Default to 1 copy
     }
 
     public String getTitle() { return title; }
@@ -48,10 +43,6 @@ public class Book {
         return totalCopies;
     }
 
-    public void setTotalCopies(int totalCopies) {
-        this.totalCopies = totalCopies;
-    }
-
     public int getAvailableCopies() {
         return availableCopies;
     }
@@ -60,21 +51,10 @@ public class Book {
         this.availableCopies = availableCopies;
     }
 
-    // Borrow a book (decrease available copies)
-    public boolean borrowBook() {
-        if (availableCopies > 0) {
-            availableCopies--;
-            return true;
-        }
-        return false;
-    }
-
     // Return a book (increase available copies)
-    public boolean returnBook() {
+    public void returnBook() {
         if (availableCopies < totalCopies) {
             availableCopies++;
-            return true;
         }
-        return false;
     }
 }

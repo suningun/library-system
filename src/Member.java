@@ -1,5 +1,5 @@
 public class Member {
-    private String id;
+    private final String id;
     private String name;
 
     public Member(String id, String name) {
@@ -9,10 +9,6 @@ public class Member {
 
     public String getId() {
         return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getName() {

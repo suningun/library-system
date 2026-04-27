@@ -88,16 +88,6 @@ public class BorrowBook {
         }
     }
 
-    // 🔹 CHECK IF MEMBER EXISTS (SIMPLIFIED)
-    private boolean memberExists(String memberId) {
-        ArrayList<Member> memberList = memberManagement.getMemberList();
-        for (Member m : memberList) {
-            if (m.getId().equalsIgnoreCase(memberId)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     // 🔹 GET MEMBER NAME BY ID (SIMPLIFIED)
     private String getMemberName(String memberId) {
