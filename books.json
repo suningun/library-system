@@ -1,12 +1,12 @@
 [
   {
-    "title": "To Kill a Mockingbird",
+    "title": "To kill a Mockingbird",
     "author": "Harper Lee",
     "year": 1960,
     "genre": "Fiction",
     "isbn": "9780061120084",
     "totalCopies": 6,
-    "availableCopies": 4
+    "availableCopies": 3
   },
   {
     "title": "1984",

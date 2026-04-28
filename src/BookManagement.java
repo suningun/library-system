@@ -108,6 +108,7 @@ public class BookManagement {
             }
 
             Book book = bookList.get(index);
+            String originalTitle = book.getTitle();
             boolean updated = false;
 
             while (true) {
@@ -184,6 +185,9 @@ public class BookManagement {
                     case 6 -> {
                         if (updated) {
                             saveBooks();
+                            if (!originalTitle.equalsIgnoreCase(book.getTitle())) {
+                                updateBorrowRecordTitles(originalTitle, book.getTitle());
+                            }
                             System.out.println("Book updated successfully.");
                         } else {
                             System.out.println("No changes were made.");
@@ -333,11 +337,11 @@ public class BookManagement {
             for (int i = 0; i < bookList.size(); i++) {
                 Book book = bookList.get(i);
                 writer.write("  {\n");
-                writer.write("    \"title\": \"" + escapeJson(book.getTitle()) + "\",\n");
-                writer.write("    \"author\": \"" + escapeJson(book.getAuthor()) + "\",\n");
+                writer.write("    \"title\": \"" + JsonUtility.escapeJson(book.getTitle()) + "\",\n");
+                writer.write("    \"author\": \"" + JsonUtility.escapeJson(book.getAuthor()) + "\",\n");
                 writer.write("    \"year\": " + book.getYear() + ",\n");
-                writer.write("    \"genre\": \"" + escapeJson(book.getGenre()) + "\",\n");
-                writer.write("    \"isbn\": \"" + escapeJson(book.getIsbn()) + "\",\n");
+                writer.write("    \"genre\": \"" + JsonUtility.escapeJson(book.getGenre()) + "\",\n");
+                writer.write("    \"isbn\": \"" + JsonUtility.escapeJson(book.getIsbn()) + "\",\n");
                 writer.write("    \"totalCopies\": " + book.getTotalCopies() + ",\n");
                 writer.write("    \"availableCopies\": " + book.getAvailableCopies() + "\n");
                 writer.write("  }");
@@ -368,13 +372,13 @@ public class BookManagement {
 
             while (objectMatcher.find()) {
                 String obj = objectMatcher.group();
-                String title = extractString(obj, "title");
-                String author = extractString(obj, "author");
-                Integer year = extractInt(obj, "year");
-                String genre = extractString(obj, "genre");
-                String isbn = extractString(obj, "isbn");
-                Integer totalCopies = extractInt(obj, "totalCopies");
-                Integer availableCopies = extractInt(obj, "availableCopies");
+                String title = JsonUtility.extractString(obj, "title");
+                String author = JsonUtility.extractString(obj, "author");
+                Integer year = JsonUtility.extractInt(obj, "year");
+                String genre = JsonUtility.extractString(obj, "genre");
+                String isbn = JsonUtility.extractString(obj, "isbn");
+                Integer totalCopies = JsonUtility.extractInt(obj, "totalCopies");
+                Integer availableCopies = JsonUtility.extractInt(obj, "availableCopies");
 
                 if (title == null || author == null || year == null || genre == null || isbn == null) {
                     continue;
@@ -412,43 +416,48 @@ public class BookManagement {
         saveBooks();
     }
 
-    private String escapeJson(String value) {
-        return value.replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\t", "\\t");
-    }
-
-    private String unescapeJson(String value) {
-        return value.replace("\\\"", "\"")
-                .replace("\\n", "\n")
-                .replace("\\r", "\r")
-                .replace("\\t", "\t")
-                .replace("\\\\", "\\");
-    }
-
-    private String extractString(String obj, String key) {
-        Pattern p = Pattern.compile("\"" + key + "\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"");
-        Matcher m = p.matcher(obj);
-        if (!m.find()) {
-            return null;
+    private void updateBorrowRecordTitles(String oldTitle, String newTitle) {
+        File borrowFile = new File("borrowRecord.json");
+        if (!borrowFile.exists()) {
+            return;
         }
-        return unescapeJson(m.group(1));
-    }
 
-    private Integer extractInt(String obj, String key) {
-        Pattern p = Pattern.compile("\"" + key + "\"\\s*:\\s*(-?\\d+)");
-        Matcher m = p.matcher(obj);
-        if (!m.find()) {
-            return null;
-        }
-        try {
-            return Integer.parseInt(m.group(1));
-        } catch (NumberFormatException e) {
-            return null;
+        try (BufferedReader reader = new BufferedReader(new FileReader(borrowFile))) {
+            StringBuilder json = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                json.append(line).append('\n');
+            }
+
+            String updatedJson = replaceBorrowTitles(json.toString(), oldTitle, newTitle);
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(borrowFile))) {
+                writer.write(updatedJson);
+            }
+        } catch (IOException e) {
+            System.out.println("Error updating borrow records: " + e.getMessage());
         }
     }
+
+    private String replaceBorrowTitles(String json, String oldTitle, String newTitle) {
+        Pattern pattern = Pattern.compile("\\\"bookTitle\\\"\\s*:\\s*\\\"((?:\\\\.|[^\\\"\\\\])*)\\\"");
+        Matcher matcher = pattern.matcher(json);
+        StringBuffer result = new StringBuffer();
+        String escapedNewTitle = JsonUtility.escapeJson(newTitle);
+
+        while (matcher.find()) {
+            String currentTitle = JsonUtility.unescapeJson(matcher.group(1));
+            String replacement = matcher.group(0);
+            if (currentTitle.equalsIgnoreCase(oldTitle)) {
+                replacement = "\"bookTitle\": \"" + escapedNewTitle + "\"";
+            }
+            matcher.appendReplacement(result, Matcher.quoteReplacement(replacement));
+        }
+
+        matcher.appendTail(result);
+        return result.toString();
+    }
+
 
     // 🔹 PUBLIC METHOD TO LOAD BOOKS (for external use)
     public void loadBooksData() {

@@ -2,6 +2,8 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ReturnBook {
 
@@ -170,9 +172,9 @@ public class ReturnBook {
             for (int i = 0; i < borrowRecords.size(); i++) {
                 BorrowRecord record = borrowRecords.get(i);
                 writer.write("  {\n");
-                writer.write("    \"memberId\": \"" + escapeJson(record.getMemberId()) + "\",\n");
-                writer.write("    \"memberName\": \"" + escapeJson(record.getMemberName()) + "\",\n");
-                writer.write("    \"bookTitle\": \"" + escapeJson(record.getBookTitle()) + "\",\n");
+                writer.write("    \"memberId\": \"" + JsonUtility.escapeJson(record.getMemberId()) + "\",\n");
+                writer.write("    \"memberName\": \"" + JsonUtility.escapeJson(record.getMemberName()) + "\",\n");
+                writer.write("    \"bookTitle\": \"" + JsonUtility.escapeJson(record.getBookTitle()) + "\",\n");
                 writer.write("    \"borrowDate\": \"" + record.getBorrowDate() + "\",\n");
                 writer.write("    \"dueDate\": \"" + record.getDueDate() + "\",\n");
                 writer.write("    \"returnDate\": \"" + (record.getReturnDate() != null ? record.getReturnDate() : "null") + "\"\n");
@@ -194,45 +196,24 @@ public class ReturnBook {
         borrowRecords = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
-            StringBuilder content = new StringBuilder();
+            StringBuilder json = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
-                content.append(line.trim());
+                json.append(line).append('\n');
             }
 
-            String json = content.toString();
-            if (json.length() <= 2) return; // Empty array []
+            Pattern objectPattern = Pattern.compile("\\{[^{}]*}");
+            Matcher objectMatcher = objectPattern.matcher(json.toString());
 
-            // Remove outer brackets and split by objects
-            String[] objects = json.substring(1, json.length() - 1).split("},\\s*\\{");
+            while (objectMatcher.find()) {
+                String obj = objectMatcher.group();
+                String memberId = JsonUtility.extractString(obj, "memberId");
+                String memberName = JsonUtility.extractString(obj, "memberName");
+                String bookTitle = JsonUtility.extractString(obj, "bookTitle");
+                String borrowDateStr = JsonUtility.extractString(obj, "borrowDate");
+                String dueDateStr = JsonUtility.extractString(obj, "dueDate");
+                String returnDateStr = JsonUtility.extractString(obj, "returnDate");
 
-            for (String obj : objects) {
-                obj = obj.replace("{", "").replace("}", "").trim();
-                if (obj.isEmpty()) continue;
-
-                // Parse key-value pairs
-                String[] pairs = obj.split(",\\s*");
-                String memberId = null, memberName = null, bookTitle = null;
-                String borrowDateStr = null, dueDateStr = null, returnDateStr = null;
-
-                for (String pair : pairs) {
-                    String[] keyValue = pair.split(":\\s*", 2);
-                    if (keyValue.length != 2) continue;
-
-                    String key = keyValue[0].replace("\"", "");
-                    String value = keyValue[1].replace("\"", "");
-
-                    switch (key) {
-                        case "memberId" -> memberId = value;
-                        case "memberName" -> memberName = value;
-                        case "bookTitle" -> bookTitle = value;
-                        case "borrowDate" -> borrowDateStr = value;
-                        case "dueDate" -> dueDateStr = value;
-                        case "returnDate" -> returnDateStr = value;
-                    }
-                }
-
-                // Validate required fields
                 if (memberId == null || bookTitle == null || borrowDateStr == null || dueDateStr == null) {
                     continue;
                 }
@@ -272,13 +253,6 @@ public class ReturnBook {
         saveBorrowRecords();
     }
 
-    private String escapeJson(String value) {
-        return value.replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\t", "\\t");
-    }
 
     // 🔹 INCREASE AVAILABLE COPIES OF A BOOK
     private void returnBookCopy(String bookTitle) {

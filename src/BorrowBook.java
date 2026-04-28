@@ -179,9 +179,9 @@ public class BorrowBook {
             for (int i = 0; i < borrowRecords.size(); i++) {
                 BorrowRecord record = borrowRecords.get(i);
                 writer.write("  {\n");
-                writer.write("    \"memberId\": \"" + escapeJson(record.getMemberId()) + "\",\n");
-                writer.write("    \"memberName\": \"" + escapeJson(record.getMemberName()) + "\",\n");
-                writer.write("    \"bookTitle\": \"" + escapeJson(record.getBookTitle()) + "\",\n");
+                writer.write("    \"memberId\": \"" + JsonUtility.escapeJson(record.getMemberId()) + "\",\n");
+                writer.write("    \"memberName\": \"" + JsonUtility.escapeJson(record.getMemberName()) + "\",\n");
+                writer.write("    \"bookTitle\": \"" + JsonUtility.escapeJson(record.getBookTitle()) + "\",\n");
                 writer.write("    \"borrowDate\": \"" + record.getBorrowDate() + "\",\n");
                 writer.write("    \"dueDate\": \"" + record.getDueDate() + "\",\n");
                 writer.write("    \"returnDate\": \"" + (record.getReturnDate() != null ? record.getReturnDate() : "null") + "\"\n");
@@ -213,12 +213,12 @@ public class BorrowBook {
 
             while (objectMatcher.find()) {
                 String obj = objectMatcher.group();
-                String memberId = extractString(obj, "memberId");
-                String memberName = extractString(obj, "memberName");
-                String bookTitle = extractString(obj, "bookTitle");
-                String borrowDateStr = extractString(obj, "borrowDate");
-                String dueDateStr = extractString(obj, "dueDate");
-                String returnDateStr = extractString(obj, "returnDate");
+                String memberId = JsonUtility.extractString(obj, "memberId");
+                String memberName = JsonUtility.extractString(obj, "memberName");
+                String bookTitle = JsonUtility.extractString(obj, "bookTitle");
+                String borrowDateStr = JsonUtility.extractString(obj, "borrowDate");
+                String dueDateStr = JsonUtility.extractString(obj, "dueDate");
+                String returnDateStr = JsonUtility.extractString(obj, "returnDate");
 
                 if (memberId == null || bookTitle == null || borrowDateStr == null || dueDateStr == null) {
                     continue;
@@ -262,28 +262,4 @@ public class BorrowBook {
         saveBorrowRecords();
     }
 
-    private String escapeJson(String value) {
-        return value.replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\t", "\\t");
-    }
-
-    private String unescapeJson(String value) {
-        return value.replace("\\\"", "\"")
-                .replace("\\n", "\n")
-                .replace("\\r", "\r")
-                .replace("\\t", "\t")
-                .replace("\\\\", "\\");
-    }
-
-    private String extractString(String obj, String key) {
-        Pattern p = Pattern.compile("\"" + key + "\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"");
-        Matcher m = p.matcher(obj);
-        if (!m.find()) {
-            return null;
-        }
-        return unescapeJson(m.group(1));
-    }
 }

@@ -230,57 +230,57 @@ public class MemberManagement {
         }
     }
 
-     // SAVE JSON
-     private void saveMembers() {
-         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
-             writer.write("[\n");
-             for (int i = 0; i < memberList.size(); i++) {
-                 Member member = memberList.get(i);
-                 writer.write("  {\n");
-                 writer.write("    \"id\": \"" + escapeJson(member.getId()) + "\",\n");
-                 writer.write("    \"name\": \"" + escapeJson(member.getName()) + "\"\n");
-                 writer.write("  }");
-                 if (i < memberList.size() - 1) {
-                     writer.write(",");
-                 }
-                 writer.newLine();
-             }
-             writer.write("]");
-         } catch (IOException e) {
-             System.out.println("Error saving file: " + e.getMessage());
-         }
-     }
+      // SAVE JSON
+      private void saveMembers() {
+          try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
+              writer.write("[\n");
+              for (int i = 0; i < memberList.size(); i++) {
+                  Member member = memberList.get(i);
+                  writer.write("  {\n");
+                  writer.write("    \"id\": \"" + JsonUtility.escapeJson(member.getId()) + "\",\n");
+                  writer.write("    \"name\": \"" + JsonUtility.escapeJson(member.getName()) + "\"\n");
+                  writer.write("  }");
+                  if (i < memberList.size() - 1) {
+                      writer.write(",");
+                  }
+                  writer.newLine();
+              }
+              writer.write("]");
+          } catch (IOException e) {
+              System.out.println("Error saving file: " + e.getMessage());
+          }
+      }
 
-     // LOAD JSON
-     private void loadMembers() {
-         ensureJsonFileExists();
-         memberList = new ArrayList<>();
-         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
-             StringBuilder json = new StringBuilder();
-             String line;
-             while ((line = reader.readLine()) != null) {
-                 json.append(line).append('\n');
-             }
+      // LOAD JSON
+      private void loadMembers() {
+          ensureJsonFileExists();
+          memberList = new ArrayList<>();
+          try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
+              StringBuilder json = new StringBuilder();
+              String line;
+              while ((line = reader.readLine()) != null) {
+                  json.append(line).append('\n');
+              }
 
-             Pattern objectPattern = Pattern.compile("\\{[^{}]*}");
-             Matcher objectMatcher = objectPattern.matcher(json.toString());
+              Pattern objectPattern = Pattern.compile("\\{[^{}]*}");
+              Matcher objectMatcher = objectPattern.matcher(json.toString());
 
-             while (objectMatcher.find()) {
-                 String obj = objectMatcher.group();
-                 String id = extractString(obj, "id");
-                 String name = extractString(obj, "name");
-                 if (name == null || name.trim().isEmpty()) {
-                     continue;
-                 }
-                 if (id == null) {
-                     id = generateMemberId();
-                 }
-                 memberList.add(new Member(id, name));
-             }
-         } catch (IOException e) {
-             System.out.println("Error loading file: " + e.getMessage());
-         }
-     }
+              while (objectMatcher.find()) {
+                  String obj = objectMatcher.group();
+                  String id = JsonUtility.extractString(obj, "id");
+                  String name = JsonUtility.extractString(obj, "name");
+                  if (name == null || name.trim().isEmpty()) {
+                      continue;
+                  }
+                  if (id == null) {
+                      id = generateMemberId();
+                  }
+                  memberList.add(new Member(id, name));
+              }
+          } catch (IOException e) {
+              System.out.println("Error loading file: " + e.getMessage());
+          }
+      }
 
     private void ensureJsonFileExists() {
         File jsonFile = new File(FILE_NAME);
@@ -292,30 +292,6 @@ public class MemberManagement {
         saveMembers();
     }
 
-    private String escapeJson(String value) {
-        return value.replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\t", "\\t");
-    }
-
-    private String unescapeJson(String value) {
-        return value.replace("\\\"", "\"")
-                .replace("\\n", "\n")
-                .replace("\\r", "\r")
-                .replace("\\t", "\t")
-                .replace("\\\\", "\\");
-    }
-
-    private String extractString(String obj, String key) {
-        Pattern p = Pattern.compile("\"" + key + "\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"");
-        Matcher m = p.matcher(obj);
-        if (!m.find()) {
-            return null;
-        }
-        return unescapeJson(m.group(1));
-    }
 
     private String generateMemberId() {
         int nextId = memberList.size() + 1;
