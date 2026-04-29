@@ -7,16 +7,16 @@ A streamlined Java-based library management system with all essential features f
 ## ✨ Key Features
 
 ### 1. **Multiple Classes (OOP Architecture)**
-Well-organized object-oriented design with 11 core classes + 1 utility class:
+Well-organized object-oriented design with 12 Java classes:
 
 - **Main.java** - Entry point
 - **LibrarySystem.java** - Main orchestrator
 - **LoginManager.java** - Authentication (3-attempt limit)
-- **BookManagement.java** - Book CRUD operations
-- **MemberManagement.java** - Member CRUD operations
+- **BookManagement.java** - Book CRUD operations + book title sync to borrow records
+- **MemberManagement.java** - Member CRUD operations + member name sync to borrow records
 - **BorrowBook.java** - Lending system
 - **ReturnBook.java** - Return processing with fine calculation
-- **JsonUtility.java** - Centralized JSON operations (NEW)
+- **JsonUtility.java** - Centralized JSON operations (escape/unescape/extract)
 - **Book.java** - Book entity with stock tracking
 - **Member.java** - Member entity
 - **BorrowRecord.java** - Borrow/return transaction record
@@ -49,6 +49,11 @@ Comprehensive error handling prevents crashes:
 - Automatic fine calculation: $1 per day overdue
 - Overdue records viewable with calculated penalties
 - Fine calculated at return time
+
+### 6. **Data Synchronization** ✨
+- When a book title is updated, all borrow records automatically sync the new title
+- When a member name is updated, all borrow records automatically sync the new name
+- Ensures data consistency across JSON files
 
 ## 🚀 Code Simplification Impact
 
@@ -83,12 +88,13 @@ Comprehensive error handling prevents crashes:
 ### Compile All Classes
 ```bash
 cd /Users/suning/Documents/library-system
-javac src/*.java
+mkdir -p build
+javac -d build src/*.java
 ```
 
 ### Run the System
 ```bash
-java -cp src Main
+java -cp build Main
 ```
 
 ### Expected Output
@@ -170,11 +176,13 @@ JsonUtility (read/write JSON)
 library-system/
 ├── src/
 │   ├── *.java (12 source files)
-│   └── *.class (12 compiled files)
+├── build/
+│   ├── *.class (compiled output - ignored by git)
 ├── books.json
 ├── members.json
 ├── borrowRecord.json
 ├── library-system.iml
+├── .gitignore
 └── README.md
 ```
 
