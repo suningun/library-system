@@ -81,9 +81,6 @@ public class MemberManagement {
     // 🔹 UPDATE
     private void updateMember() {
         try {
-            viewMembers();
-            if (memberList.isEmpty()) return;
-
             System.out.print("Select member number: ");
             int index = scanner.nextInt() - 1;
             scanner.nextLine();
@@ -93,9 +90,6 @@ public class MemberManagement {
                 return;
             }
 
-            Member member = memberList.get(index);
-            String originalName = member.getName();
-
             System.out.print("Enter new name: ");
             String newName = scanner.nextLine().trim();
 
@@ -104,14 +98,8 @@ public class MemberManagement {
                 return;
             }
 
-            member.setName(newName);
+            memberList.get(index).setName(newName);
             saveMembers();
-
-            // Update borrow records if name changed
-            if (!originalName.equalsIgnoreCase(newName)) {
-                updateBorrowRecordNames(originalName, newName);
-            }
-
             System.out.println("Member updated.");
 
         } catch (InputMismatchException e) {
@@ -242,57 +230,57 @@ public class MemberManagement {
         }
     }
 
-      // SAVE JSON
-      private void saveMembers() {
-          try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
-              writer.write("[\n");
-              for (int i = 0; i < memberList.size(); i++) {
-                  Member member = memberList.get(i);
-                  writer.write("  {\n");
-                  writer.write("    \"id\": \"" + JsonUtility.escapeJson(member.getId()) + "\",\n");
-                  writer.write("    \"name\": \"" + JsonUtility.escapeJson(member.getName()) + "\"\n");
-                  writer.write("  }");
-                  if (i < memberList.size() - 1) {
-                      writer.write(",");
-                  }
-                  writer.newLine();
-              }
-              writer.write("]");
-          } catch (IOException e) {
-              System.out.println("Error saving file: " + e.getMessage());
-          }
-      }
+     // SAVE JSON
+     private void saveMembers() {
+         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
+             writer.write("[\n");
+             for (int i = 0; i < memberList.size(); i++) {
+                 Member member = memberList.get(i);
+                 writer.write("  {\n");
+                 writer.write("    \"id\": \"" + escapeJson(member.getId()) + "\",\n");
+                 writer.write("    \"name\": \"" + escapeJson(member.getName()) + "\"\n");
+                 writer.write("  }");
+                 if (i < memberList.size() - 1) {
+                     writer.write(",");
+                 }
+                 writer.newLine();
+             }
+             writer.write("]");
+         } catch (IOException e) {
+             System.out.println("Error saving file: " + e.getMessage());
+         }
+     }
 
-      // LOAD JSON
-      private void loadMembers() {
-          ensureJsonFileExists();
-          memberList = new ArrayList<>();
-          try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
-              StringBuilder json = new StringBuilder();
-              String line;
-              while ((line = reader.readLine()) != null) {
-                  json.append(line).append('\n');
-              }
+     // LOAD JSON
+     private void loadMembers() {
+         ensureJsonFileExists();
+         memberList = new ArrayList<>();
+         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
+             StringBuilder json = new StringBuilder();
+             String line;
+             while ((line = reader.readLine()) != null) {
+                 json.append(line).append('\n');
+             }
 
-              Pattern objectPattern = Pattern.compile("\\{[^{}]*}");
-              Matcher objectMatcher = objectPattern.matcher(json.toString());
+             Pattern objectPattern = Pattern.compile("\\{[^{}]*}");
+             Matcher objectMatcher = objectPattern.matcher(json.toString());
 
-              while (objectMatcher.find()) {
-                  String obj = objectMatcher.group();
-                  String id = JsonUtility.extractString(obj, "id");
-                  String name = JsonUtility.extractString(obj, "name");
-                  if (name == null || name.trim().isEmpty()) {
-                      continue;
-                  }
-                  if (id == null) {
-                      id = generateMemberId();
-                  }
-                  memberList.add(new Member(id, name));
-              }
-          } catch (IOException e) {
-              System.out.println("Error loading file: " + e.getMessage());
-          }
-      }
+             while (objectMatcher.find()) {
+                 String obj = objectMatcher.group();
+                 String id = extractString(obj, "id");
+                 String name = extractString(obj, "name");
+                 if (name == null || name.trim().isEmpty()) {
+                     continue;
+                 }
+                 if (id == null) {
+                     id = generateMemberId();
+                 }
+                 memberList.add(new Member(id, name));
+             }
+         } catch (IOException e) {
+             System.out.println("Error loading file: " + e.getMessage());
+         }
+     }
 
     private void ensureJsonFileExists() {
         File jsonFile = new File(FILE_NAME);
@@ -304,52 +292,34 @@ public class MemberManagement {
         saveMembers();
     }
 
+    private String escapeJson(String value) {
+        return value.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
+    }
+
+    private String unescapeJson(String value) {
+        return value.replace("\\\"", "\"")
+                .replace("\\n", "\n")
+                .replace("\\r", "\r")
+                .replace("\\t", "\t")
+                .replace("\\\\", "\\");
+    }
+
+    private String extractString(String obj, String key) {
+        Pattern p = Pattern.compile("\"" + key + "\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"");
+        Matcher m = p.matcher(obj);
+        if (!m.find()) {
+            return null;
+        }
+        return unescapeJson(m.group(1));
+    }
 
     private String generateMemberId() {
         int nextId = memberList.size() + 1;
         return String.format("%03d", nextId);
-    }
-
-    private void updateBorrowRecordNames(String oldName, String newName) {
-        File borrowFile = new File("borrowRecord.json");
-        if (!borrowFile.exists()) {
-            return;
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(borrowFile))) {
-            StringBuilder json = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                json.append(line).append('\n');
-            }
-
-            String updatedJson = replaceBorrowNames(json.toString(), oldName, newName);
-
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(borrowFile))) {
-                writer.write(updatedJson);
-            }
-        } catch (IOException e) {
-            System.out.println("Error updating borrow records: " + e.getMessage());
-        }
-    }
-
-    private String replaceBorrowNames(String json, String oldName, String newName) {
-        Pattern pattern = Pattern.compile("\"memberName\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"");
-        Matcher matcher = pattern.matcher(json);
-        StringBuilder result = new StringBuilder();
-        String escapedNewName = JsonUtility.escapeJson(newName);
-
-        while (matcher.find()) {
-            String currentName = JsonUtility.unescapeJson(matcher.group(1));
-            String replacement = matcher.group(0);
-            if (currentName.equalsIgnoreCase(oldName)) {
-                replacement = "\"memberName\": \"" + escapedNewName + "\"";
-            }
-            matcher.appendReplacement(result, Matcher.quoteReplacement(replacement));
-        }
-
-        matcher.appendTail(result);
-        return result.toString();
     }
 
     // 🔹 PUBLIC METHOD TO LOAD MEMBERS (for external use)

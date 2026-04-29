@@ -14,8 +14,8 @@
     "year": 1949,
     "genre": "Dystopian",
     "isbn": "9780451524935",
-    "totalCopies": 5,
-    "availableCopies": 3
+    "totalCopies": 7,
+    "availableCopies": 4
   },
   {
     "title": "Pride and Prejudice",
@@ -33,7 +33,7 @@
     "genre": "Classic",
     "isbn": "9780743273565",
     "totalCopies": 4,
-    "availableCopies": 2
+    "availableCopies": 0
   },
   {
     "title": "The Hobbit",

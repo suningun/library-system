@@ -6,5 +6,13 @@
     "borrowDate": "2026-04-28",
     "dueDate": "2026-05-01",
     "returnDate": "null"
+  },
+  {
+    "memberId": "003",
+    "memberName": "Charlie",
+    "bookTitle": "1984",
+    "borrowDate": "2026-04-29",
+    "dueDate": "2026-05-02",
+    "returnDate": "null"
   }
 ]

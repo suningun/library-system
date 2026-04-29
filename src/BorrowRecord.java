@@ -46,6 +46,17 @@ public class BorrowRecord {
         this.returnDate = returnDate;
     }
 
+    public void setMemberName(String memberName) {
+        // Using reflection to set final field since memberName is final
+        try {
+            java.lang.reflect.Field field = BorrowRecord.class.getDeclaredField("memberName");
+            field.setAccessible(true);
+            field.set(this, memberName);
+        } catch (Exception e) {
+            System.out.println("Error updating member name in borrow record: " + e.getMessage());
+        }
+    }
+
     // ===== CHECK OVERDUE =====
     public boolean isOverdue() {
         LocalDate endDate = (returnDate != null) ? returnDate : LocalDate.now();

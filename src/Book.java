@@ -4,7 +4,7 @@ public class Book {
     private int year;
     private String genre;
     private String isbn;
-    private final int totalCopies;
+    private int totalCopies;
     private int availableCopies;
 
     public Book(String title, String author, int year, String genre, String isbn, int totalCopies) {
@@ -43,12 +43,24 @@ public class Book {
         return totalCopies;
     }
 
+    public void setTotalCopies(int totalCopies) {
+        this.totalCopies = totalCopies;
+    }
+
     public int getAvailableCopies() {
         return availableCopies;
     }
 
     public void setAvailableCopies(int availableCopies) {
         this.availableCopies = availableCopies;
+    }
+
+    // Add more copies to the book (increases both total and available copies)
+    public void addCopies(int copiesToAdd) {
+        if (copiesToAdd > 0) {
+            this.totalCopies += copiesToAdd;
+            this.availableCopies += copiesToAdd;
+        }
     }
 
     // Return a book (increase available copies)

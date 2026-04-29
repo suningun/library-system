@@ -118,7 +118,8 @@ public class BookManagement {
                 System.out.println("3. Update Year (Current: " + book.getYear() + ")");
                 System.out.println("4. Update Genre (Current: " + book.getGenre() + ")");
                 System.out.println("5. Update ISBN (Current: " + book.getIsbn() + ")");
-                System.out.println("6. Done");
+                System.out.println("6. Add Book Copies (Current: Total=" + book.getTotalCopies() + ", Available=" + book.getAvailableCopies() + ")");
+                System.out.println("7. Done");
                 System.out.print("Select field to update: ");
 
                 int choice = scanner.nextInt();
@@ -183,6 +184,23 @@ public class BookManagement {
                         }
                     }
                     case 6 -> {
+                        System.out.print("Enter number of copies to add: ");
+                        try {
+                            int copiesToAdd = scanner.nextInt();
+                            scanner.nextLine();
+                            if (copiesToAdd <= 0) {
+                                System.out.println("Number of copies must be greater than 0.");
+                            } else {
+                                book.addCopies(copiesToAdd);
+                                System.out.println("Added " + copiesToAdd + " copies. New total: " + book.getTotalCopies() + ", Available: " + book.getAvailableCopies());
+                                updated = true;
+                            }
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid input. Please enter a valid number.");
+                            scanner.nextLine();
+                        }
+                    }
+                    case 7 -> {
                         if (updated) {
                             saveBooks();
                             if (!originalTitle.equalsIgnoreCase(book.getTitle())) {
