@@ -1,24 +1,8 @@
 [
   {
-    "memberId": "005",
-    "memberName": "John",
-    "bookTitle": "Tah",
-    "borrowDate": "2026-04-23",
-    "dueDate": "2026-04-26",
-    "returnDate": "null"
-  },
-  {
     "memberId": "002",
     "memberName": "Bob",
-    "bookTitle": "Musica",
-    "borrowDate": "2026-04-26",
-    "dueDate": "2026-04-29",
-    "returnDate": "2026-04-28"
-  },
-  {
-    "memberId": "002",
-    "memberName": "Bob",
-    "bookTitle": "To Kill a Mockingbird",
+    "bookTitle": "to Kill",
     "borrowDate": "2026-04-28",
     "dueDate": "2026-05-01",
     "returnDate": "null"

@@ -81,6 +81,9 @@ public class MemberManagement {
     // 🔹 UPDATE
     private void updateMember() {
         try {
+            viewMembers();
+            if (memberList.isEmpty()) return;
+
             System.out.print("Select member number: ");
             int index = scanner.nextInt() - 1;
             scanner.nextLine();
@@ -90,6 +93,9 @@ public class MemberManagement {
                 return;
             }
 
+            Member member = memberList.get(index);
+            String originalName = member.getName();
+
             System.out.print("Enter new name: ");
             String newName = scanner.nextLine().trim();
 
@@ -98,8 +104,14 @@ public class MemberManagement {
                 return;
             }
 
-            memberList.get(index).setName(newName);
+            member.setName(newName);
             saveMembers();
+
+            // Update borrow records if name changed
+            if (!originalName.equalsIgnoreCase(newName)) {
+                updateBorrowRecordNames(originalName, newName);
+            }
+
             System.out.println("Member updated.");
 
         } catch (InputMismatchException e) {
@@ -296,6 +308,48 @@ public class MemberManagement {
     private String generateMemberId() {
         int nextId = memberList.size() + 1;
         return String.format("%03d", nextId);
+    }
+
+    private void updateBorrowRecordNames(String oldName, String newName) {
+        File borrowFile = new File("borrowRecord.json");
+        if (!borrowFile.exists()) {
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(borrowFile))) {
+            StringBuilder json = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                json.append(line).append('\n');
+            }
+
+            String updatedJson = replaceBorrowNames(json.toString(), oldName, newName);
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(borrowFile))) {
+                writer.write(updatedJson);
+            }
+        } catch (IOException e) {
+            System.out.println("Error updating borrow records: " + e.getMessage());
+        }
+    }
+
+    private String replaceBorrowNames(String json, String oldName, String newName) {
+        Pattern pattern = Pattern.compile("\"memberName\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"");
+        Matcher matcher = pattern.matcher(json);
+        StringBuilder result = new StringBuilder();
+        String escapedNewName = JsonUtility.escapeJson(newName);
+
+        while (matcher.find()) {
+            String currentName = JsonUtility.unescapeJson(matcher.group(1));
+            String replacement = matcher.group(0);
+            if (currentName.equalsIgnoreCase(oldName)) {
+                replacement = "\"memberName\": \"" + escapedNewName + "\"";
+            }
+            matcher.appendReplacement(result, Matcher.quoteReplacement(replacement));
+        }
+
+        matcher.appendTail(result);
+        return result.toString();
     }
 
     // 🔹 PUBLIC METHOD TO LOAD MEMBERS (for external use)

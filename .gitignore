@@ -6,6 +6,7 @@ out/
 
 ### Compiled Java ###
 *.class
+build/
 
 ### Eclipse ###
 .apt_generated
