@@ -4,6 +4,19 @@
 
 A streamlined Java-based library management system with all essential features for managing books, members, borrowing, and returns with automatic fine calculation.
 
+## 🚀 Quick Start
+
+From the project root, compile and run the app with:
+
+```bash
+cd /Users/suning/Documents/library-system
+mkdir -p build
+javac -d build src/*.java
+java -cp build Main
+```
+
+If you see `Could not find or load main class Main`, re-run the compile command above before starting the app.
+
 ## ✨ Key Features
 
 ### 1. **Multiple Classes (OOP Architecture)**
@@ -59,12 +72,12 @@ Comprehensive error handling prevents crashes:
 
 ### Elimination of Code Duplication
 
-| Component | Before | After | Removed |
-|-----------|--------|-------|---------|
-| JSON escaping | 4 copies | 1 utility | 3 duplicates |
-| JSON unescaping | 4 copies | 1 utility | 3 duplicates |
-| String extraction | 4 copies | 1 utility | 3 duplicates |
-| Integer extraction | 3 copies | 1 utility | 2 duplicates |
+| Component                 | Before   | After       | Removed           |
+|---------------------------|----------|-------------|-------------------|
+| JSON escaping             | 4 copies | 1 utility   | 3 duplicates      |
+| JSON unescaping           | 4 copies | 1 utility   | 3 duplicates      |
+| String extraction         | 4 copies | 1 utility   | 3 duplicates      |
+| Integer extraction        | 3 copies | 1 utility   | 2 duplicates      |
 | **Total duplicate lines** | **100+** | **Removed** | **92% reduction** |
 
 ### Key Refactoring
@@ -95,6 +108,13 @@ javac -d build src/*.java
 ### Run the System
 ```bash
 java -cp build Main
+```
+
+> If you see `Error: Could not find or load main class Main`, it usually means the sources have not been compiled into `build/` yet or the command is being run from the wrong directory. Re-run the compile step above from the project root, then start the app with `java -cp build Main`.
+
+### One-line build + run
+```bash
+cd /Users/suning/Documents/library-system && mkdir -p build && javac -d build src/*.java && java -cp build Main
 ```
 
 ### Expected Output
@@ -260,7 +280,7 @@ This is a simplified educational project.
 
 ---
 
-**Last Updated**: April 28, 2026
+**Last Updated**: April 28, 2026,
 **Version**: 1.1 (Simplified)
 **Status**: Production Ready ✅
 

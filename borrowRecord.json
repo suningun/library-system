@@ -2,7 +2,7 @@
   {
     "memberId": "002",
     "memberName": "Bob",
-    "bookTitle": "to Kill",
+    "bookTitle": "To Kill a Mockingbird",
     "borrowDate": "2026-04-28",
     "dueDate": "2026-05-01",
     "returnDate": "null"
